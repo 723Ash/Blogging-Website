@@ -1,0 +1,43 @@
+name: PR Validation
+
+on:
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run HTMLHint
+        run: npx htmlhint "src/*.html"
+
+      - name: Run Stylelint
+        # The --allow-empty-input flag prevents errors if no CSS files are found
+        run: npx stylelint "src/styles/*.css" 
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build with Parcel
+        run: npx parcel build src/*.html --dist-dir build
